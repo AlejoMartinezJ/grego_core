@@ -34,7 +34,6 @@ public class OrderHandler {
 	
 	
 	public Mono<ServerResponse> listar(ServerRequest req){
-		System.err.println("entro aqui 1");
 		return ServerResponse
 				.ok()
 				.contentType(MediaType.APPLICATION_JSON)
@@ -42,8 +41,6 @@ public class OrderHandler {
 	}
 	
 	public Mono<ServerResponse> listarPorId(ServerRequest req){
-		System.err.println("entro aqui 2");
-
 		Long id = Long.parseLong(req.pathVariable("id"));
 		return service.findById(id)
 				.flatMap(c -> 

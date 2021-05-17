@@ -67,14 +67,10 @@ public class OrderServiceImpl extends CrudImpl<Order, Long> implements IOrderSer
 
 	@Override
 	public Flux<OrderResponse> findAllOrder() {
-		System.err.println("entroo findallorder");
-
 		return repository.findAll()
 		.map(this::toOrderResponse)
-		.flatMap(order ->{		
-			System.err.println(order.toString());
-
-			return Mono.just(order).zipWith(ordertypeService.listarPorId(order.getIdOrderType()).map(this::toOrderTypeDto),(ord,orTy)->{					
+		.flatMap(order ->		
+			 Mono.just(order).zipWith(ordertypeService.listarPorId(order.getIdOrderType()).map(this::toOrderTypeDto),(ord,orTy)->{					
 				ord.setOrderType(orTy);
 				return ord;
 			}).zipWith(orderdetailService.listarPorIdOrder(order.getOrderId()).defaultIfEmpty(OrderDetail.builder().build()).map(this::toOrderDetailDto).collectList().defaultIfEmpty(new ArrayList<>()),(ord,det)->{									
@@ -89,21 +85,19 @@ public class OrderServiceImpl extends CrudImpl<Order, Long> implements IOrderSer
 			}).zipWith(locationService.listarPorIdOrder(order.getOrderId()).defaultIfEmpty(Location.builder().build()).map(this::toLocationDto),(ord,loc)->{					
 				ord.setOrderLocation(loc);
 				return ord;
-			});
+			})
 			
-		});
+		);
 		
 	}
 	
 	@Override
 	public Mono<OrderResponse> findById(Long id) {
 		// TODO Auto-generated method stub
-		System.err.println("entro a find by id ");
 		return repository.findById(id)								
 				.map(this::toOrderResponse)
-				.flatMap(order ->{	
-					System.err.println(order.toString());
-					return Mono.just(order).zipWith(ordertypeService.listarPorId(order.getIdOrderType()).map(this::toOrderTypeDto),(ord,orTy)->{					
+				.flatMap(order ->	
+					 Mono.just(order).zipWith(ordertypeService.listarPorId(order.getIdOrderType()).map(this::toOrderTypeDto),(ord,orTy)->{					
 						ord.setOrderType(orTy);
 						return ord;
 					}).zipWith(orderdetailService.listarPorIdOrder(order.getOrderId()).defaultIfEmpty(OrderDetail.builder().build()).map(this::toOrderDetailDto).collectList(),(ord,det)->{					
@@ -118,9 +112,9 @@ public class OrderServiceImpl extends CrudImpl<Order, Long> implements IOrderSer
 					}).zipWith(locationService.listarPorIdOrder(order.getOrderId()).defaultIfEmpty(Location.builder().build()).map(this::toLocationDto),(ord,loc)->{					
 						ord.setOrderLocation(loc);
 						return ord;
-					});
+					})
 														
-			});
+			);
 	}
 	
 
@@ -128,51 +122,48 @@ public class OrderServiceImpl extends CrudImpl<Order, Long> implements IOrderSer
 	@Override
 	public Mono<OrderResponse> registrarOrder(OrderRequest request) {
 		return repository.save(toOrder(request))
-		.flatMap(order ->{
-			return orderdetailService.registrarAll(toOrderDetailList(order,request))
-		 	.flatMap(orddet ->{
-		 		return Mono.just(orddet);
-		 	}).collectList()
+		.flatMap(order ->
+			 orderdetailService.registrarAll(toOrderDetailList(order,request))
+		 	.flatMap(orddet ->
+		 		 Mono.just(orddet)
+		 	).collectList()
 		 	.flatMap(list ->{
-		 		if (list.size()>0) {
+		 		if (!list.isEmpty()) {
 			 	 	return Mono.just(order); 					
 				}
 		 		return Mono.empty();			 	
-		 	});		 	
-		})
-		.flatMap(order->{
-			return schedulerService.registrarAll(toScheduleList(order,request))
-			.flatMap(sche ->{
-		 		System.err.println(sche.toString());
-		 		return Mono.just(sche);
-		 	}).collectList()
+		 	})	 	
+		)
+		.flatMap(order->
+			 schedulerService.registrarAll(toScheduleList(order,request))
+			.flatMap(sche ->
+		 		 Mono.just(sche)
+		 	).collectList()
 		 	.flatMap(list ->{
-		 		if (list.size()>0) {
+		 		if (!list.isEmpty()) {
 			 	 	return Mono.just(order); 					
 				}
 		 		return Mono.empty();			 	
-		 	});
-		})
-		.flatMap(order->{
-		 	return measureService.registrar(toMeasure(order,request))
+		 	})
+		)
+		.flatMap(order->
+		 	 measureService.registrar(toMeasure(order,request))
 		 	.flatMap(me ->{
 		 		if (me != null ) {
-			 		System.err.println(me.toString());
-				 	return Mono.just(order);
+			 		return Mono.just(order);
 				}
 		 		return Mono.empty();
-		 	});
-		})
-		.flatMap(order->{
-			return locationService.registrar(toLocation(order,request))
+		 	})
+		)
+		.flatMap(order->
+			 locationService.registrar(toLocation(order,request))
 		 	.flatMap(loc ->{
 		 		if (loc != null ) {
-			 		System.err.println(loc.toString());
-				 	return Mono.just(order);
+			 		return Mono.just(order);
 				}
 		 		return Mono.empty();
-		 	});
-		})
+		 	})
+		)
 		.flatMap(ord-> findById(ord.getId()));
 		
 	}
@@ -181,46 +172,44 @@ public class OrderServiceImpl extends CrudImpl<Order, Long> implements IOrderSer
 	public Mono<OrderResponse> modificarOrder(OrderRequest request) {
 		// TODO Auto-generated method stub
 		return repository.save(toOrderUpdate(request))
-				.flatMap(order ->{
-					return orderdetailService
+				.flatMap(order ->
+					 orderdetailService
 							.listarPorIdOrder(order.getId())
 							.collectList()
 							.flatMap( list->{
 								orderdetailService.eliminarAll(list).subscribe();
 								orderdetailService.registrarAll(toOrderDetailList(order,request)).subscribe();
 								return Mono.just(order);
-							});
-				})
-				.flatMap(order ->{
-					return schedulerService
+							})
+				)
+				.flatMap(order ->
+					 schedulerService
 							.listarPorIdOrder(order.getId())
 							.collectList()
 							.flatMap(list->{
 								schedulerService.eliminarAll(list).subscribe();
 								schedulerService.registrarAll(toScheduleList(order,request)).subscribe();
 								return Mono.just(order);
-							});
-				})
-				.flatMap(order ->{
-					return measureService
+							})
+				)
+				.flatMap(order ->
+					 measureService
 							.listarPorIdOrder(order.getId())
 							.flatMap( item-> {							
 								measureService.eliminar(item.getId()).subscribe();
 								measureService.registrar(toMeasure(order,request)).subscribe();
 								return Mono.just(order);
-							});
-				})
-				.flatMap(order ->{
-					return locationService
+							})
+				)
+				.flatMap(order ->
+					 locationService
 							.listarPorIdOrder(order.getId())
 							.flatMap(item->{
-								System.err.println(item.toString());
-	  						    locationService.eliminar(item.getId()).subscribe();
-								return locationService.registrar(toLocation(order,request)).flatMap(loc->{
-									return Mono.just(order);	
-								});
-							});	
-				})
+								locationService.eliminar(item.getId()).subscribe();
+								return locationService.registrar(toLocation(order,request)).flatMap(loc->
+									 Mono.just(order));
+							})
+				)
 				.flatMap(ord-> findById(ord.getId()));
 				
 	}
@@ -247,32 +236,32 @@ public class OrderServiceImpl extends CrudImpl<Order, Long> implements IOrderSer
 	}
 
 	private Flux<Schedule> toScheduleList(Order order, OrderRequest request) {
-	 return Flux.fromIterable(request.getSchedule()).flatMap(schedule->{
+	 return Flux.fromIterable(request.getSchedule()).flatMap(schedule->
 			 
-			 return Mono.just( Schedule
+			  Mono.just( Schedule
 			 .builder()
 			 .idOrder(order.getId())
 			 .deliverydate(schedule.getDeliverydate())
-			 .build());
+			 .build())
 			 			 			
-		});
+		);
 	}
 
 	private Flux<OrderDetail> toOrderDetailList(Order order, OrderRequest request) {
 		// TODO Auto-generated method stub
 		
-		 return Flux.fromIterable(request.getOrderDetail()).flatMap(detail->{
+		 return Flux.fromIterable(request.getOrderDetail()).flatMap(detail->
 			 
-			 return Mono.just( OrderDetail
+			  Mono.just( OrderDetail
 			 .builder()
 			 .idOrder(order.getId())
 			 .idProducto(detail.getIdProducto())
 			 .presentation(detail.getPresentation())
 			 .product(detail.getProduct())
 			 .quantity(detail.getQuantity())
-			 .build());
+			 .build())
 			 			 			
-		});
+		);
 	}
 	
 
@@ -344,7 +333,6 @@ public class OrderServiceImpl extends CrudImpl<Order, Long> implements IOrderSer
 	}
 
 	private OrderDetailDto toOrderDetailDto(OrderDetail entity) {
-		System.err.println("ENTRO toOrderDetailDto ");
 		return OrderDetailDto
 		.builder()
 		.id(entity.getId())
