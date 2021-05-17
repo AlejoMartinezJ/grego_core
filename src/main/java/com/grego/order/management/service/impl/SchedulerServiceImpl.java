@@ -1,5 +1,7 @@
 package com.grego.order.management.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,7 @@ import com.grego.order.management.repository.model.Schedule;
 import com.grego.order.management.service.ISchedulerService;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class SchedulerServiceImpl extends CrudImpl<Schedule, Long> implements ISchedulerService {
@@ -32,6 +35,12 @@ public class SchedulerServiceImpl extends CrudImpl<Schedule, Long> implements IS
 	public Flux<Schedule> registrarAll(Flux<Schedule> scheduleList) {
 		// TODO Auto-generated method stub
 		return repository.saveAll(scheduleList);
+	}
+
+	@Override
+	public Mono<Void> eliminarAll(List<Schedule> list) {
+		// TODO Auto-generated method stub
+		return repository.deleteAll(list);
 	}
 
 }

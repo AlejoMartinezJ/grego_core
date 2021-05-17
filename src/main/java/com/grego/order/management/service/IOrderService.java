@@ -14,4 +14,6 @@ public interface IOrderService  extends ICrud<Order, Long>{
 	Mono<OrderResponse> findById(Long id);
 	
 	Mono<OrderResponse> registrarOrder(OrderRequest request);
+	Mono<OrderResponse> modificarOrder(OrderRequest request);
+	
 }

@@ -1,5 +1,7 @@
 package com.grego.order.management.service.impl;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -9,6 +11,7 @@ import com.grego.order.management.repository.model.OrderDetail;
 import com.grego.order.management.service.IOrderdetailService;
 
 import reactor.core.publisher.Flux;
+import reactor.core.publisher.Mono;
 
 @Service
 public class OrderDetailServiceImpl extends CrudImpl<OrderDetail, Long> implements IOrderdetailService {
@@ -32,6 +35,12 @@ public class OrderDetailServiceImpl extends CrudImpl<OrderDetail, Long> implemen
 	public Flux<OrderDetail> registrarAll(Flux<OrderDetail> lista) {
 		// TODO Auto-generated method stub
 		return repository.saveAll(lista);
+	}
+
+	@Override
+	public Mono<Void> eliminarAll(List<OrderDetail> list) {
+		// TODO Auto-generated method stub
+		return repository.deleteAll(list);
 	}
 
 }

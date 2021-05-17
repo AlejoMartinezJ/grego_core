@@ -46,20 +46,20 @@ public class Order {
 	@Column("orderTimestamp")	
 	private LocalDateTime orderTimestamp;
 	
-	@Column("nameOrderType")	
-	private String nameOrderType;
-	@Column("descrptionOrderType")	
-	private String descrptionOrderType;
-	@Column("longitude")	
-	private String longitude;
-	@Column("latitude")	
-	private String latitude;
-	@Column("length")	
-	private Double length;
-	@Column("width")	
-	private Double width;
-	@Column("depth")	
-	private Double depth;
+//	@Column("nameOrderType")	
+//	private String nameOrderType;
+//	@Column("descrptionOrderType")	
+//	private String descrptionOrderType;
+//	@Column("longitude")	
+//	private String longitude;
+//	@Column("latitude")	
+//	private String latitude;
+//	@Column("length")	
+//	private Double length;
+//	@Column("width")	
+//	private Double width;
+//	@Column("depth")	
+//	private Double depth;
 	
 	
 	

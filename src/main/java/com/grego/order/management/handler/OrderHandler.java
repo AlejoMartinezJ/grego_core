@@ -11,7 +11,6 @@ import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import com.grego.order.management.entity.OrderRequest;
-import com.grego.order.management.repository.model.Order;
 import com.grego.order.management.service.IOrderService;
 import com.grego.order.management.validators.RequestValidator;
 
@@ -58,10 +57,8 @@ public class OrderHandler {
 				);				
 	}
 	
-	public Mono<ServerResponse> registrar(ServerRequest req){
-		
+	public Mono<ServerResponse> registrar(ServerRequest req){		
 		Mono<OrderRequest> request = req.bodyToMono(OrderRequest.class);
-		
 		return request
 				//.flatMap(validadorGeneral::validate)
 				.flatMap(service::registrarOrder)
@@ -73,12 +70,11 @@ public class OrderHandler {
 	}
 	
 	public Mono<ServerResponse> modificar(ServerRequest req){
+		Mono<OrderRequest> request = req.bodyToMono(OrderRequest.class);
 		
-		Mono<Order> platoMono = req.bodyToMono(Order.class);
-		
-		return platoMono
+		return request
 				.flatMap(validadorGeneral::validate)
-				.flatMap(service::modificar)
+				.flatMap(service::modificarOrder)
 				.flatMap(c -> ServerResponse
 						.ok()
 						.contentType(MediaType.APPLICATION_JSON)
