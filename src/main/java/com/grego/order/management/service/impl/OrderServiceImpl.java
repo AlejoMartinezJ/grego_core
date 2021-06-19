@@ -211,7 +211,6 @@ public class OrderServiceImpl extends CrudImpl<Order, Long> implements IOrderSer
 							})
 				)
 				.flatMap(ord-> findById(ord.getId()));
-				
 	}
 	
 	private Location toLocation(Order order, OrderRequest request) {

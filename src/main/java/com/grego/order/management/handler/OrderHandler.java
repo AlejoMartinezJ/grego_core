@@ -41,7 +41,7 @@ public class OrderHandler {
 	}
 	
 	public Mono<ServerResponse> listarPorId(ServerRequest req){
-		Long id = Long.parseLong(req.pathVariable("id"));
+		Long id = Long.parseLong(req.pathVariable("orderId"));
 		return service.findById(id)
 				.flatMap(c -> 
 						ServerResponse
